@@ -35,7 +35,7 @@ public class UsuarioController {
 		return usuarioService.cadastrarUsuario(usuario);
 	}
 	
-	@PostMapping("/login")
+	@GetMapping("/login")
 	public Boolean logar(@RequestBody UsuarioDto dto) throws Exception {
 		return usuarioService.login(dto);
 	}

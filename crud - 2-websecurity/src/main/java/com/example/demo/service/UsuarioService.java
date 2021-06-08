@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UsuarioDto;
@@ -16,6 +17,9 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+//	@Autowired
+//	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	
 	public List<Usuario> pegarTodosUsuario() throws Exception{
 		return usuarioRepository.findAll();
@@ -23,6 +27,7 @@ public class UsuarioService {
 	
 	public Usuario cadastrarUsuario(Usuario user) throws Exception{
 		if(user.getNome() != null && user.getEmail() != null && user.getSenha() != null) {
+			user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
 			return usuarioRepository.save(user);
 		} else {
 			throw new Exception("Algum Campo está Vazios!");
@@ -30,10 +35,11 @@ public class UsuarioService {
 	}
 	
 	public Boolean login(UsuarioDto dto) throws Exception{
-		
 		Usuario usuario = usuarioRepository.findByEmail(dto.getEmail());
-
-		if(usuario.getSenha().equals(dto.getSenha())) {
+		
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
+		
+		if(encoder.matches(dto.getSenha(), usuario.getPassword()) == true) {
 			return true;
 		}else {
 			throw new Exception("Email ou senha Invalidos!");
